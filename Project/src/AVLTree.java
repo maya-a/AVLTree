@@ -62,7 +62,7 @@ public class AVLTree {
 		if (x.getKey() == k) {
 			return x.getValue() ;
 		}
-		else if (x.getKey() < k){
+		else if (x.getKey() < k) {
 			x = x.getRight();
 		}
 		else {
@@ -308,11 +308,11 @@ public class AVLTree {
    * Returns -1 if an item with key k was not found in the tree.
    */
    public int delete(int k) {
-   	int total = 0;
+	   int total = 0;
 	   if (search(k) == null) {
 		   return -1;
 	   }
-	   IAVLNode node = treePosition(k);
+	   IAVLNode node = (IAVLNode) treePosition(k);
 	   if (node.getKey() == maxNode.getKey()) {
 		   maxNode = node.predecessor();
 	   }
@@ -321,19 +321,29 @@ public class AVLTree {
 	   }
 
 	   IAVLNode parent = node.getParent();
-	   if (node.isLeaf()) { deleteLeaf(node); }
-	   else if (node.isUnaryNode()) { deleteUnary(node); }
-	   else { deleteBinary(node); }
+
+
+	   if (node.isLeaf()) {
+		   deleteLeaf(node);
+	   } else if (node.isUnaryNode()) {
+		   deleteUnary(node);
+	   } else {
+		   deleteBinary(node);
+	   }
 
 	   treeSize -= 1;
 
-	   node = parent.getParent(); //z
+		if (parent != null) {
+			node = (IAVLNode) parent;
+		}
+
 	   int rightEdge;
 	   int leftEdge;
 
-	   rightEdge = node.getHeight()-node.getRight().getHeight();
+	   rightEdge = node.getHeight() - node.getRight().getHeight();
 	   leftEdge = node.getHeight()-node.getLeft().getHeight();
-	   while (Math.abs(leftEdge - rightEdge)>1) {
+
+	   while (Math.abs(leftEdge - rightEdge)> 1 || leftEdge + rightEdge > 3) {
 		    if (leftEdge == 2 && rightEdge == 2) {
 				node.demote();
 				total += 1;
@@ -411,7 +421,9 @@ public class AVLTree {
 		   parent.setRight(VIRTUAL_NODE);
 	   }
 	   node.setParent(null);
-	   parent.downSize();
+	   if (parent != null) {
+		   parent.downSize();
+	   }
    }
    private void deleteUnary(IAVLNode node) {
 	   if (node.isLeftChild()) {
@@ -420,7 +432,9 @@ public class AVLTree {
 			   node.getParent().setLeft(node.getLeft());
 		   } else {
 			   node.getRight().setParent(node.getParent());
+			   if (node.getParent() != null) {
 			   node.getParent().setLeft(node.getRight());
+			   }
 		   }
 	   }
 	   else {
@@ -429,10 +443,14 @@ public class AVLTree {
 			   node.getParent().setRight(node.getLeft());
 		   } else {
 			   node.getRight().setParent(node.getParent());
-			   node.getParent().setRight(node.getRight());
+			   if (node.getParent() != null) {
+				   node.getParent().setRight(node.getRight());
+			   }
 		   }
 	   }
-	   node.getParent().downSize();
+	   if (node.getParent() != null) {
+		   node.getParent().downSize();
+	   }
    }
    private void deleteBinary(IAVLNode node) {
 	   IAVLNode successor = node.successor();
@@ -450,7 +468,9 @@ public class AVLTree {
 	   } else {
 		   node.getParent().setRight(successor);
 	   }
-	   node.getParent().downSize();
+	   if (node.getParent() != null) {
+		   node.getParent().downSize();
+	   }
    }
 
    /**
@@ -503,11 +523,11 @@ public class AVLTree {
 		if (empty()) {
 			minNode = node;
 			maxNode = node;
-		}
-		else if (node.getKey() < minNode.getKey()) {
+		} else
+		if (node.getKey() < minNode.getKey() || !minNode.isRealNode()) {
 				minNode = node;
 			}
-		else if (node.getKey() > maxNode.getKey()) {
+		else if (node.getKey() > maxNode.getKey() || !minNode.isRealNode()) {
 				maxNode = node;
 			}
 
@@ -1028,7 +1048,7 @@ public class AVLTree {
 		public IAVLNode successor(){
 			IAVLNode x = this;
 			if (x.getKey() == maxNode.getKey()) {
-				return null;
+				return VIRTUAL_NODE;
 			}
 			if (x.getRight().isRealNode()) {
 				x = x.getRight();
@@ -1042,6 +1062,23 @@ public class AVLTree {
 			}
 			return x.getParent();
 		}
+	   public IAVLNode predecessor(){
+		   IAVLNode x = this;
+		   if (x.getKey() == minNode.getKey()) {
+			   return VIRTUAL_NODE;
+		   }
+		   if (x.getLeft().isRealNode()) {
+			   x = x.getLeft();
+			   while (x.getRight().isRealNode()) {
+				   x = x.getRight();
+			   }
+			   return x;
+		   }
+		   while (x.isLeftChild() && x.getParent() != null) {
+			   x = x.getParent();
+		   }
+		   return x.getParent();
+	   }
 
 	    public int getSize() {
 			return size;
@@ -1074,9 +1111,6 @@ public class AVLTree {
 				node = node.getParent();
 			}
 	   }
-	   public IAVLNode predecessor(){
-			return null;
-	   	}
    }
 }
 
