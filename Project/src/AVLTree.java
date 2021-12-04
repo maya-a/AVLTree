@@ -54,6 +54,7 @@ public class AVLTree {
 	 * Returns the info of an item with key k if it exists in the tree.
 	 * otherwise, returns null.
 	 */
+
 	public String search(int k) { // O(height) time complexity
 		IAVLNode x = root;
 		while (x.isRealNode()) {
@@ -98,7 +99,6 @@ public class AVLTree {
 		if (search(node.getKey()) != null) {
 			return -1;
 		}
-
 		treeSize += 1;
 		updateMinMax(node);
 		if (this.empty()){
@@ -143,6 +143,7 @@ public class AVLTree {
 		}
 		return x; // the parent of the node we inserted
 	}
+
 	private int AVLInsert(IAVLNode root, IAVLNode node) {
 		int total = 0;
 		IAVLNode y = treeInsert(root,node); //B is where i inserted A
