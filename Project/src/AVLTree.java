@@ -324,7 +324,10 @@ public class AVLTree {
 			this.root = VIRTUAL_NODE;
 			minNode = VIRTUAL_NODE;
 			maxNode = VIRTUAL_NODE;
+			treeSize -= 1;
+			return 0;
 		}
+		treeSize -= 1;
 		IAVLNode node = treePosition(k);
 		IAVLNode parent = node.getParent();
 
@@ -342,7 +345,6 @@ public class AVLTree {
 			deleteBinary(node);
 		}
 
-		treeSize -= 1;
 
 		if (parent == null) {
 			return total;
@@ -372,22 +374,18 @@ public class AVLTree {
 					return total;
 				}
 				else if (leftEdge == 2 && rightEdge == 1) {
+					node.getParent().doubleDemote();
 					leftRotation(node,node.getParent());
-					if (node.getParent() != null){
-						node.getParent().demote();
-						node.getParent().demote();
-					}
 					node = node.getParent();
 					total += 3;
 				}
 				else if (leftEdge == 1 && rightEdge == 2) {
 					node.demote(); //y
-					rightRotation(node,node.getLeft());
+					rightRotation(node.getLeft(),node);
 					node = node.getParent(); //a
 					node.promote();
 					leftRotation(node,node.getParent());
-					node.getLeft().demote(); //z
-					node.getLeft().demote(); //z
+					node.getLeft().doubleDemote(); //z
 					total += 6;
 				}
 			}if (leftEdge == 1 && rightEdge == 3) {
@@ -403,19 +401,18 @@ public class AVLTree {
 				}
 				else if (leftEdge == 1 && rightEdge == 2) {
 					rightRotation(node,node.getParent());
-					node.getParent().demote();
-					node.getParent().demote();
+					node.getParent().doubleDemote();
+
 					node = node.getParent();
 					total += 3;
 				}
 				else if (leftEdge == 2 && rightEdge == 1) {
 					node.demote(); //y
-					leftRotation(node,node.getLeft());
+					leftRotation(node.getRight(),node);
 					node = node.getParent(); //a
 					node.promote();
 					rightRotation(node,node.getParent());
-					node.getRight().demote(); //z
-					node.getRight().demote(); //z
+					node.getRight().doubleDemote(); //z
 					total += 6;
 				}
 			}
@@ -442,7 +439,19 @@ public class AVLTree {
 		}
 	}
 	private void deleteUnary(IAVLNode node) {
-		if (node.isLeftChild()) {
+		if (node.getParent() == null) {
+			if (node.getLeft().isRealNode()) {
+				root = node.getLeft();
+				root.setParent(null);
+				node.setLeft(null);
+			}
+			if (node.getRight().isRealNode()) {
+				root = node.getRight();
+				root.setParent(null);
+				node.setRight(null);
+			}
+		}
+		else if (node.isLeftChild()) {
 			if (node.getLeft().isRealNode()) {
 				node.getLeft().setParent(node.getParent());
 				node.getParent().setLeft(node.getLeft());
@@ -471,20 +480,23 @@ public class AVLTree {
 	private void deleteBinary(IAVLNode node) {
 		IAVLNode successor = node.successor();
 		successor.setHeight(node.getHeight());
-		if (successor.isLeaf()) { deleteLeaf(successor); }
-		else { deleteUnary(successor); }
+		if (successor.isLeaf()) {
+			deleteLeaf(successor);
+		} else {
+			deleteUnary(successor);
+		}
 
 		successor.setRight(node.getRight());
 		successor.setLeft(node.getLeft());
 		successor.setParent(node.getParent());
 		node.getRight().setParent(successor);
 		node.getLeft().setParent(successor);
-		if (node.isLeftChild()) {
-			node.getParent().setLeft(successor);
-		} else {
-			node.getParent().setRight(successor);
-		}
 		if (node.getParent() != null) {
+			if (node.isLeftChild()) {
+				node.getParent().setLeft(successor);
+			} else {
+				node.getParent().setRight(successor);
+			}
 			node.getParent().downSize();
 		}
 	}
@@ -973,6 +985,7 @@ public class AVLTree {
 		public void setSize(int size);
 		public void promote();
 		public void demote();
+		public void doubleDemote();
 		public boolean isUnaryNode();
 		public boolean isLeaf();
 		public boolean isLeftChild();
@@ -1067,6 +1080,8 @@ public class AVLTree {
 		public void demote() {
 			setHeight(getHeight() - 1);
 		}
+
+		public void doubleDemote() {setHeight(getHeight() - 2);}
 
 		public boolean isLeaf() {
 			return (!getLeft().isRealNode() && !getRight().isRealNode());
