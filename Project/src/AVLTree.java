@@ -626,8 +626,9 @@ public class AVLTree {
 	 * precondition: search(x) != null (i.e. you can also assume that the tree is not empty)
 	 * postcondition: none
 	 */
-	public AVLTree[] split(int x)
-	{
+
+
+	public AVLTree[] split(int x) {
 		AVLTree rightTree = new AVLTree();
 		AVLTree leftTree = new AVLTree();
 		IAVLNode node = treePosition(x);
@@ -656,10 +657,10 @@ public class AVLTree {
 				left.setParent(null);
 			}
 			if (node.getParent() != null) {
-				if (node.isLeftChild()) {
-					rightTree.join(node, (new AVLTree(right, right.getSize())));
-				} else {
+				if (node.isLeftChild() && left.isRealNode()) {
 					leftTree.join(node, (new AVLTree(left, left.getSize())));
+				} else if (right.isRealNode()){
+					rightTree.join(node, (new AVLTree(right, right.getSize())));
 				}
 			}
 		}
@@ -702,169 +703,173 @@ public class AVLTree {
 			return 1;
 		}
 		if (thisRoot.getHeight() < otherRoot.getHeight()) { // case 1 - thisHeight < otherHeight && thisKeys < otherKeys
-			//joinDifferentSizes(x,this,t);
-			if (thisRoot.getKey() < otherRoot.getKey()) {
-				IAVLNode b = otherRoot.getLeft();
-				while (thisRoot.getHeight() < b.getHeight()) {
-					b = b.getLeft(); //assuming there is left
-				}
-				IAVLNode c = b.getParent();
-				thisRoot.setParent(x);
-				x.setLeft(thisRoot);
-				x.setParent(c);
-				c.setLeft(x);
-				b.setParent(x);
-				x.setRight(b);
-				x.setHeight(thisRoot.getHeight() + 1);
-				x.updateSize();
-				root = otherRoot;
-
-				int leftEdge = c.getHeight() - x.getHeight();
-				int rightEdge = c.getHeight() - c.getRight().getHeight();
-				while (Math.abs(rightEdge-leftEdge) > 1 || leftEdge == 0 || rightEdge == 0) {
-					if (leftEdge == 0 && rightEdge == 1) {
-						c.promote();
-					}
-					if (leftEdge == 0 && rightEdge == 2) {
-						//total +=
-						fixCase02(c);
-					}
-					//if (leftEdge == 2 && rightEdge == 0) {
-					//	total += fixCase20(c);
-					//}
-					if (c.getParent() != null) {
-						c = c.getParent();
-						rightEdge = c.getHeight() - c.getRight().getHeight();
-						leftEdge = c.getHeight() - c.getLeft().getHeight();
-					} else {
-						break;
-					}
-
-				}
-
-			}
-			else if (thisRoot.getKey() > otherRoot.getKey()) { // case 2 - thisHeight < otherHeight && thisKeys > otherKeys
-				IAVLNode b = otherRoot.getRight();
-				while (thisRoot.getHeight() < b.getHeight()) {
-					b = b.getRight(); //assuming there is right
-				}
-				IAVLNode c = b.getParent();
-				thisRoot.setParent(x);
-				x.setLeft(b);
-				x.setRight(thisRoot);
-				x.setParent(c);
-				c.setRight(x);
-				b.setParent(x);
-				x.setHeight(thisRoot.getHeight() + 1);
-				x.updateSize();
-				root = otherRoot;
-
-				int rightEdge = c.getHeight()-x.getHeight();
-				int leftEdge = c.getHeight() - c.getLeft().getHeight();
-
-				while (Math.abs(rightEdge-leftEdge)>1 || leftEdge == 0 || rightEdge == 0) {
-					if (leftEdge == 1 && rightEdge == 0) {
-						c.promote();
-					}
-					//if (leftEdge == 0 && rightEdge == 2) {
-					//	total += fixCase02(c);
-					//}
-					if (leftEdge == 2 && rightEdge == 0) {
-						//total +=
-						fixCase20(c);
-					}
-					if (c.getParent() != null) {
-						c = c.getParent();
-						rightEdge = c.getHeight() - c.getRight().getHeight();
-						leftEdge = c.getHeight() - c.getLeft().getHeight();
-					} else {
-						break;
-					}
-				}
-			}
-
+			joinDifferentSizes(x,this,t);}
+		else {
+			joinDifferentSizes(x,t,this);
 		}
-		else if (thisRoot.getHeight() > otherRoot.getHeight()) { // case 3 - thisHeight > otherHeight && thisKeys < otherKeys
-			//joinDifferentSizes(x,t,this);
-			if (thisRoot.getKey() < otherRoot.getKey()) {
-				IAVLNode b = thisRoot.getRight();
-				while (otherRoot.getHeight() < b.getHeight()) {
-					b = b.getRight(); //assuming there is right
-				}
-				IAVLNode c = b.getParent();
-				otherRoot.setParent(x);
-				x.setLeft(b);
-				x.setRight(otherRoot);
-				x.setParent(c);
-				c.setRight(x);
-				b.setParent(x);
-				x.setHeight(otherRoot.getHeight() + 1);
-				x.updateSize();
-				//root = thisRoot;
-
-				int rightEdge = c.getHeight() - x.getHeight();
-				int leftEdge = c.getHeight() - c.getLeft().getHeight();
-
-				while (Math.abs(rightEdge-leftEdge)>1 || leftEdge == 0 || rightEdge == 0) {
-					if (leftEdge == 1 && rightEdge == 0) {
-						c.promote();
-					}
-					//if (leftEdge == 0 && rightEdge == 2) {
-					//	total += fixCase02(c);
-					//}
-					if (leftEdge == 2 && rightEdge == 0) {
-						//total +=
-						fixCase20(c);
-					}
-					if (c.getParent() != null) {
-						c = c.getParent();
-						rightEdge = c.getHeight() - c.getRight().getHeight();
-						leftEdge = c.getHeight() - c.getLeft().getHeight();
-					} else {
-						break;
-					}
-				}
-			}
-			else if (thisRoot.getKey() > otherRoot.getKey()) { // case 4 - thisHeight > otherHeight && thisKeys > otherKeys
-				IAVLNode b = thisRoot.getLeft();
-				while (otherRoot.getHeight() < b.getHeight()) {
-					b = b.getLeft(); //assuming there is left
-				}
-				IAVLNode c = b.getParent();
-				otherRoot.setParent(x);
-				x.setLeft(otherRoot);
-				x.setParent(c);
-				c.setLeft(x);
-				b.setParent(x);
-				x.setRight(b);
-				x.setHeight(otherRoot.getHeight() + 1);
-				x.updateSize();
-				//root = thisRoot;
-
-				int leftEdge = c.getHeight() - x.getHeight();
-				int rightEdge = c.getHeight() - c.getRight().getHeight();
-
-				while (Math.abs(rightEdge-leftEdge)>1 || leftEdge == 0 || rightEdge == 0) {
-					if (leftEdge == 0 && rightEdge == 1) {
-						c.promote();
-					}
-					if (leftEdge == 0 && rightEdge == 2) {
-						//total +=
-						fixCase02(c);
-					}
-					//if (leftEdge == 2 && rightEdge == 0) {
-					//	total += fixCase20(c);
-					//}
-					if (c.getParent() != null) {
-						c = c.getParent();
-						rightEdge = c.getHeight() - c.getRight().getHeight();
-						leftEdge = c.getHeight() - c.getLeft().getHeight();
-					} else {
-						break;
-					}
-				}
-			}
-		}
+//			if (thisRoot.getKey() < otherRoot.getKey()) {
+//				IAVLNode b = otherRoot.getLeft();
+//				while (thisRoot.getHeight() < b.ge
+//				tHeight()) {
+//					b = b.getLeft(); //assuming there is left
+//				}
+//				IAVLNode c = b.getParent();
+//				thisRoot.setParent(x);
+//				x.setLeft(thisRoot);
+//				x.setParent(c);
+//				c.setLeft(x);
+//				b.setParent(x);
+//				x.setRight(b);
+//				x.setHeight(thisRoot.getHeight() + 1);
+//				x.updateSize();
+//				root = otherRoot;
+//
+//				int leftEdge = c.getHeight() - x.getHeight();
+//				int rightEdge = c.getHeight() - c.getRight().getHeight();
+//				while (Math.abs(rightEdge-leftEdge) > 1 || leftEdge == 0 || rightEdge == 0) {
+//					if (leftEdge == 0 && rightEdge == 1) {
+//						c.promote();
+//					}
+//					if (leftEdge == 0 && rightEdge == 2) {
+//						//total +=
+//						fixCase02(c);
+//					}
+//					//if (leftEdge == 2 && rightEdge == 0) {
+//					//	total += fixCase20(c);
+//					//}
+//					if (c.getParent() != null) {
+//						c = c.getParent();
+//						rightEdge = c.getHeight() - c.getRight().getHeight();
+//						leftEdge = c.getHeight() - c.getLeft().getHeight();
+//					} else {
+//						break;
+//					}
+//
+//				}
+//
+//			}
+//			else if (thisRoot.getKey() > otherRoot.getKey()) { // case 2 - thisHeight < otherHeight && thisKeys > otherKeys
+//				IAVLNode b = otherRoot.getRight();
+//				while (thisRoot.getHeight() < b.getHeight()) {
+//					b = b.getRight(); //assuming there is right
+//				}
+//				IAVLNode c = b.getParent();
+//				thisRoot.setParent(x);
+//				x.setLeft(b);
+//				x.setRight(thisRoot);
+//				x.setParent(c);
+//				c.setRight(x);
+//				b.setParent(x);
+//				x.setHeight(thisRoot.getHeight() + 1);
+//				x.updateSize();
+//				root = otherRoot;
+//
+//				int rightEdge = c.getHeight()-x.getHeight();
+//				int leftEdge = c.getHeight() - c.getLeft().getHeight();
+//
+//				while (Math.abs(rightEdge-leftEdge)>1 || leftEdge == 0 || rightEdge == 0) {
+//					if (leftEdge == 1 && rightEdge == 0) {
+//						c.promote();
+//					}
+//					//if (leftEdge == 0 && rightEdge == 2) {
+//					//	total += fixCase02(c);
+//					//}
+//					if (leftEdge == 2 && rightEdge == 0) {
+//						//total +=
+//						fixCase20(c);
+//					}
+//					if (c.getParent() != null) {
+//						c = c.getParent();
+//						rightEdge = c.getHeight() - c.getRight().getHeight();
+//						leftEdge = c.getHeight() - c.getLeft().getHeight();
+//					} else {
+//						break;
+//					}
+//				}
+//			}
+//
+//		}
+//		else if (thisRoot.getHeight() > otherRoot.getHeight()) { // case 3 - thisHeight > otherHeight && thisKeys < otherKeys
+//			//joinDifferentSizes(x,t,this);
+//			if (thisRoot.getKey() < otherRoot.getKey()) {
+//				IAVLNode b = thisRoot.getRight();
+//				while (otherRoot.getHeight() < b.getHeight()) {
+//					b = b.getRight(); //assuming there is right
+//				}
+//				IAVLNode c = b.getParent();
+//				otherRoot.setParent(x);
+//				x.setLeft(b);
+//				x.setRight(otherRoot);
+//				x.setParent(c);
+//				c.setRight(x);
+//				b.setParent(x);
+//				x.setHeight(otherRoot.getHeight() + 1);
+//				x.updateSize();
+//				//root = thisRoot;
+//
+//				int rightEdge = c.getHeight() - x.getHeight();
+//				int leftEdge = c.getHeight() - c.getLeft().getHeight();
+//
+//				while (Math.abs(rightEdge-leftEdge)>1 || leftEdge == 0 || rightEdge == 0) {
+//					if (leftEdge == 1 && rightEdge == 0) {
+//						c.promote();
+//					}
+//					//if (leftEdge == 0 && rightEdge == 2) {
+//					//	total += fixCase02(c);
+//					//}
+//					if (leftEdge == 2 && rightEdge == 0) {
+//						//total +=
+//						fixCase20(c);
+//					}
+//					if (c.getParent() != null) {
+//						c = c.getParent();
+//						rightEdge = c.getHeight() - c.getRight().getHeight();
+//						leftEdge = c.getHeight() - c.getLeft().getHeight();
+//					} else {
+//						break;
+//					}
+//				}
+//			}
+//			else if (thisRoot.getKey() > otherRoot.getKey()) { // case 4 - thisHeight > otherHeight && thisKeys > otherKeys
+//				IAVLNode b = thisRoot.getLeft();
+//				while (otherRoot.getHeight() < b.getHeight()) {
+//					b = b.getLeft(); //assuming there is left
+//				}
+//				IAVLNode c = b.getParent();
+//				otherRoot.setParent(x);
+//				x.setLeft(otherRoot);
+//				x.setParent(c);
+//				c.setLeft(x);
+//				b.setParent(x);
+//				x.setRight(b);
+//				x.setHeight(otherRoot.getHeight() + 1);
+//				x.updateSize();
+//				//root = thisRoot;
+//
+//				int leftEdge = c.getHeight() - x.getHeight();
+//				int rightEdge = c.getHeight() - c.getRight().getHeight();
+//
+//				while (Math.abs(rightEdge-leftEdge)>1 || leftEdge == 0 || rightEdge == 0) {
+//					if (leftEdge == 0 && rightEdge == 1) {
+//						c.promote();
+//					}
+//					if (leftEdge == 0 && rightEdge == 2) {
+//						//total +=
+//						fixCase02(c);
+//					}
+//					//if (leftEdge == 2 && rightEdge == 0) {
+//					//	total += fixCase20(c);
+//					//}
+//					if (c.getParent() != null) {
+//						c = c.getParent();
+//						rightEdge = c.getHeight() - c.getRight().getHeight();
+//						leftEdge = c.getHeight() - c.getLeft().getHeight();
+//					} else {
+//						break;
+//					}
+//				}
+//			}
+//		}
 
 		return Math.abs(thisRoot.getHeight()-otherRoot.getHeight()) + 1;
 	}
@@ -881,13 +886,15 @@ public class AVLTree {
 			lowerRoot.setParent(x);
 			x.setLeft(lowerRoot);
 			x.setParent(c);
-			c.setLeft(x);
 			b.setParent(x);
 			x.setRight(b);
 			x.setHeight(lowerRoot.getHeight() + 1);
 			x.updateSize();
 			root = higherRoot;
 
+			if (c != null) {
+				c.setLeft(x);
+			}else {return;}
 			int leftEdge = c.getHeight() - x.getHeight();
 			int rightEdge = c.getHeight() - c.getRight().getHeight();
 
@@ -909,9 +916,7 @@ public class AVLTree {
 				} else {
 					break;
 				}
-
 			}
-
 		}
 		else if (lowerRoot.getKey() > higherRoot.getKey()) { // case 2 - thisHeight < otherHeight && thisKeys > otherKeys
 			IAVLNode b = higherRoot.getRight();
@@ -924,10 +929,13 @@ public class AVLTree {
 			x.setLeft(b);
 			b.setParent(x);
 			x.setParent(c);
-			c.setRight(x);
 			x.setHeight(lowerRoot.getHeight() + 1);
 			x.updateSize();
 			root = higherRoot;
+
+			if (c == null){
+				c.setRight(x);
+			} else {return ;};
 
 			int rightEdge = c.getHeight()-x.getHeight();
 			int leftEdge = c.getHeight() - c.getLeft().getHeight();
