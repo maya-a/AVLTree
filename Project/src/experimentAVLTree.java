@@ -61,8 +61,8 @@ public class experimentAVLTree {
             if (this.empty()){
                 updateMinMax(newNode);
                 this.root = newNode;
-                counter[index] = 0;
-                return 0;
+                counter[index] = 1;
+                return 1;
             }
             return AVLInsert(root, newNode, index, counter );
         }
@@ -116,7 +116,7 @@ public class experimentAVLTree {
             return y;
         }
         public int CounterTreePosition(int k) { //returns a node with key k or the position in which we should insert it
-        int counter = 0;
+        int counter = 1;
             IAVLNode x = root;
             IAVLNode y = null;
             while (x.isRealNode()) {
@@ -174,10 +174,10 @@ public class experimentAVLTree {
             }
 
         private int maxTreePositionCount(int k) {
-            int counter = 0;
+            int counter = 1;
             IAVLNode x = maxNode;
             if (x.getKey() < k) {
-                return 0;
+                return 1;
             }
             if (x.getKey() == k) {
                 return - 1;
@@ -188,11 +188,11 @@ public class experimentAVLTree {
                         x = x.getParent();
                         counter++;
                     }
-                    if (!x.getRight().isRealNode()) {
+                    else if (!x.getRight().isRealNode()) {
                         return counter;
                     } else {
                         experimentAVLTree subTree = new experimentAVLTree(x.getLeft(), x.getLeft().getSize());
-                        return counter + subTree.CounterTreePosition(k) - 1;
+                        return counter + subTree.CounterTreePosition(k);
                     }
                 }
                 else {
