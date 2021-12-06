@@ -365,57 +365,11 @@ public class AVLTree {
 			}
 			if (leftEdge == 3 && rightEdge == 1) {
 				node = node.getRight(); //y
-				rightEdge = node.getHeight()-node.getRight().getHeight();
-				leftEdge = node.getHeight()-node.getLeft().getHeight();
-				if (leftEdge == 1 && rightEdge == 1) {
-					node.getParent().demote();
-					node.promote();
-					leftRotation(node,node.getParent());
-					total += 3;
-					return total;
-				}
-				else if (leftEdge == 2 && rightEdge == 1) {
-					node.getParent().doubleDemote();
-					leftRotation(node,node.getParent());
-					node = node.getParent();
-					total += 3;
-				}
-				else if (leftEdge == 1 && rightEdge == 2) {
-					node.demote(); //y
-					rightRotation(node.getLeft(),node);
-					node = node.getParent(); //a
-					node.promote();
-					leftRotation(node,node.getParent());
-					node.getLeft().doubleDemote(); //z
-					total += 6;
-				}
+				total += case31(node);
+				
 			}if (leftEdge == 1 && rightEdge == 3) {
 				node = node.getLeft(); //y
-				rightEdge = node.getHeight()-node.getRight().getHeight();
-				leftEdge = node.getHeight()-node.getLeft().getHeight();
-				if (leftEdge == 1 && rightEdge == 1) {
-					node.getParent().demote();
-					node.promote();
-					rightRotation(node,node.getParent());
-					total += 3;
-					return total;
-				}
-				else if (leftEdge == 1 && rightEdge == 2) {
-					rightRotation(node,node.getParent());
-					node.getParent().doubleDemote();
-
-					node = node.getParent();
-					total += 3;
-				}
-				else if (leftEdge == 2 && rightEdge == 1) {
-					node.demote(); //y
-					leftRotation(node.getRight(),node);
-					node = node.getParent(); //a
-					node.promote();
-					rightRotation(node,node.getParent());
-					node.getRight().doubleDemote(); //z
-					total += 6;
-				}
+				total += case13(node);
 			}
 			if (node != null && node.getParent() != null) {
 				node = node.getParent();
@@ -500,6 +454,65 @@ public class AVLTree {
 			}
 			node.getParent().downSize();
 		}
+	}
+	
+	private int case31(IAVLNode node) {
+		int total = 0;
+		int rightEdge = node.getHeight()-node.getRight().getHeight();
+		int leftEdge = node.getHeight()-node.getLeft().getHeight();
+		if (leftEdge == 1 && rightEdge == 1) {
+			node.getParent().demote();
+			node.promote();
+			leftRotation(node,node.getParent());
+			total += 3;
+			return total;
+		}
+		else if (leftEdge == 2 && rightEdge == 1) {
+			node.getParent().doubleDemote();
+			leftRotation(node,node.getParent());
+			node = node.getParent();
+			total += 3;
+		}
+		else if (leftEdge == 1 && rightEdge == 2) {
+			node.demote(); //y
+			rightRotation(node.getLeft(),node);
+			node = node.getParent(); //a
+			node.promote();
+			leftRotation(node,node.getParent());
+			node.getLeft().doubleDemote(); //z
+			total += 6;
+		}
+		return total;
+	}
+	
+	private int case13(IAVLNode node) {
+		int total = 0;
+		int rightEdge = node.getHeight()-node.getRight().getHeight();
+		int leftEdge = node.getHeight()-node.getLeft().getHeight();
+		if (leftEdge == 1 && rightEdge == 1) {
+			node.getParent().demote();
+			node.promote();
+			rightRotation(node,node.getParent());
+			total += 3;
+			return total;
+		}
+		else if (leftEdge == 1 && rightEdge == 2) {
+			rightRotation(node,node.getParent());
+			node.getParent().doubleDemote();
+
+			node = node.getParent();
+			total += 3;
+		}
+		else if (leftEdge == 2 && rightEdge == 1) {
+			node.demote(); //y
+			leftRotation(node.getRight(),node);
+			node = node.getParent(); //a
+			node.promote();
+			rightRotation(node,node.getParent());
+			node.getRight().doubleDemote(); //z
+			total += 6;
+		}
+		return total;
 	}
 
 	/**
