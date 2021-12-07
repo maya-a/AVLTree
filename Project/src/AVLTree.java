@@ -95,6 +95,16 @@ public class AVLTree {
 		}
 		return AVLInsert(root, newNode);
 	}
+	
+	/**
+	 * public int insert(IAVLNode node)
+	 *
+	 * Inserts a node to the AVL tree.
+	 * The tree must remain valid, i.e. keep its invariants.
+	 * Returns the number of re-balancing operations, or 0 if no re-balancing operations were necessary.
+	 * A promotion/rotation counts as one re-balance operation, double-rotation is counted as 2.
+	 * Returns -1 if the node already exists in the tree.
+	 */
 	public int insert(IAVLNode node) {
 		if (search(node.getKey()) != null) {
 			return -1;
@@ -107,7 +117,13 @@ public class AVLTree {
 		}
 		return AVLInsert(root, node);
 	}
-
+	
+	/**
+	 * public IAVLNode treePosition(int k)
+	 *
+	 * Returns the node with key k if it exists in the tree.
+	 * otherwise, returns the place where node with key k should be inserted.
+	 */
 	public IAVLNode treePosition(int k) { //returns a node with key k or the position in which we should insert it
 		IAVLNode x = root;
 		IAVLNode y = null;
@@ -125,6 +141,13 @@ public class AVLTree {
 		}
 		return y;
 	}
+	
+	/**
+	 * private IAVLNode treeInsert(IAVLNode root, IAVLNode node)
+	 *
+	 * Inserts a node to the AVL tree, without re-balancing.
+	 * 
+	 */
 	private IAVLNode treeInsert(IAVLNode root, IAVLNode node) {
 		int key = node.getKey();
 		IAVLNode x = treePosition(key); //this will surely return the position on which we should insert the node. otherwise, this function would have not been called from insert
@@ -143,7 +166,16 @@ public class AVLTree {
 		}
 		return x; // the parent of the node we inserted
 	}
-
+	
+	/**
+	 * private IAVLNode treeInsert(IAVLNode root, IAVLNode node)
+	 *
+	 * Inserts a node that does not exist in the tree to the AVL tree.
+	 * The tree must remain valid, i.e. keep its invariants.
+	 * Returns the number of re-balancing operations, or 0 if no re-balancing operations were necessary.
+	 *  
+	 */
+	 
 	private int AVLInsert(IAVLNode root, IAVLNode node) {
 		int total = 0;
 		IAVLNode y = treeInsert(root,node); //B is where i inserted A
@@ -192,6 +224,14 @@ public class AVLTree {
 		}
 		return total;
 	}
+	
+	/**
+	 * private void rightRotation(IAVLNode x, IAVLNode y)
+	 *
+	 * Rotates the parent y and it's left child x.
+	 * after the rotation y will be the right child of x.
+	 * 
+	 */
 	private void rightRotation(IAVLNode x, IAVLNode y) { // x is left child of y, we turn y into the right child of x
 		IAVLNode tempParent = y.getParent();
 		IAVLNode tempChild = x.getRight();
@@ -214,6 +254,14 @@ public class AVLTree {
 		y.setSize(y.getLeft().getSize()+y.getRight().getSize() + 1);
 		x.setSize(x.getLeft().getSize()+x.getRight().getSize() + 1);
 	}
+	
+	/**
+	 * private void leftRotation(IAVLNode y, IAVLNode x) 
+	 *
+	 * Rotates the parent x and it's right child y.
+	 * after the rotation x will be the left child of y.
+	 * 
+	 */
 	private void leftRotation(IAVLNode y, IAVLNode x) { // y is the right child of x, we turn x into the left child of y
 		IAVLNode temp_parent = x.getParent();
 		IAVLNode temp_child = y.getLeft(); //changed from IAVLNode temp_child = y.getRight(); during documentation
@@ -237,6 +285,8 @@ public class AVLTree {
 		x.setSize(x.getLeft().getSize()+x.getRight().getSize() + 1);
 		y.setSize(y.getLeft().getSize()+y.getRight().getSize() + 1);
 	}
+	
+	
 	private int fixCase02(IAVLNode node) {
 		int total = 0;
 		IAVLNode left = node.getLeft();
@@ -471,7 +521,7 @@ public class AVLTree {
 			node.getParent().doubleDemote();
 			leftRotation(node,node.getParent());
 			node = node.getParent();
-			total += 3;
+			total += 2;
 		}
 		else if (leftEdge == 1 && rightEdge == 2) {
 			node.demote(); //y
@@ -480,7 +530,7 @@ public class AVLTree {
 			node.promote();
 			leftRotation(node,node.getParent());
 			node.getLeft().doubleDemote(); //z
-			total += 6;
+			total += 5;
 		}
 		return total;
 	}
@@ -499,9 +549,8 @@ public class AVLTree {
 		else if (leftEdge == 1 && rightEdge == 2) {
 			rightRotation(node,node.getParent());
 			node.getParent().doubleDemote();
-
 			node = node.getParent();
-			total += 3;
+			total += 2;
 		}
 		else if (leftEdge == 2 && rightEdge == 1) {
 			node.demote(); //y
@@ -510,7 +559,7 @@ public class AVLTree {
 			node.promote();
 			rightRotation(node,node.getParent());
 			node.getRight().doubleDemote(); //z
-			total += 6;
+			total += 5;
 		}
 		return total;
 	}
@@ -528,6 +577,12 @@ public class AVLTree {
 		return minNode.getValue();
 	}
 
+	/**
+	 * private IAVLNode minNode()
+	 *
+	 * Returns the node with the smallest key in the tree,
+	 * or null if the tree is empty.
+	 */
 	private IAVLNode minNode() {
 		if (empty()) {
 			return null;
@@ -538,6 +593,7 @@ public class AVLTree {
 		}
 		return  x;
 	}
+	
 	/**
 	 * public String max()
 	 *
@@ -551,6 +607,13 @@ public class AVLTree {
 		return maxNode.getValue();
 
 	}
+	
+	/**
+	 * private IAVLNode maxNode()
+	 *
+	 * Returns the node with the largest key in the tree,
+	 * or null if the tree is empty.
+	 */
 	private IAVLNode maxNode() {
 		if (empty()) {
 			return null;
@@ -561,6 +624,14 @@ public class AVLTree {
 		}
 		return  x;
 	}
+	
+	/**
+	 * private void updateMinMax(IAVLNode node)
+	 *
+	 * Updates the minNode and maxNode fields of the tree,
+	 * if necessary, in case of inserting node to the tree.
+	 * 
+	 */
 	private void updateMinMax(IAVLNode node) {
 		if (empty()) {
 			minNode = node;
@@ -585,7 +656,7 @@ public class AVLTree {
 		if (empty()) {
 			return keyArray;
 		}
-		IAVLNode pointer = minNode();
+		IAVLNode pointer = minNode;
 		for (int i = 0; i < size(); i++) {
 			keyArray[i] = pointer.getKey();
 			pointer = pointer.successor();
@@ -606,7 +677,7 @@ public class AVLTree {
 		if (empty()) {
 			return infoArray;
 		}
-		IAVLNode pointer = minNode();
+		IAVLNode pointer = minNode;
 		for (int i = 0; i < size(); i++) {
 			infoArray[i] = pointer.getValue();
 			pointer = pointer.successor();
@@ -639,8 +710,6 @@ public class AVLTree {
 	 * precondition: search(x) != null (i.e. you can also assume that the tree is not empty)
 	 * postcondition: none
 	 */
-
-
 	public AVLTree[] split(int x) {
 		AVLTree rightTree = new AVLTree();
 		AVLTree leftTree = new AVLTree();
