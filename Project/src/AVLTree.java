@@ -168,7 +168,7 @@ public class AVLTree {
 	}
 	
 	/**
-	 * private IAVLNode treeInsert(IAVLNode root, IAVLNode node)
+	 * private int AVLInsert(IAVLNode root, IAVLNode node)
 	 *
 	 * Inserts a node that does not exist in the tree to the AVL tree.
 	 * The tree must remain valid, i.e. keep its invariants.
@@ -286,7 +286,13 @@ public class AVLTree {
 		y.setSize(y.getLeft().getSize()+y.getRight().getSize() + 1);
 	}
 	
-	
+	/**
+	 * private int fixCase02(IAVLNode node)
+	 *
+	 * Re-balancing for case 02 after insertion - left edge is 0 and right edge is 2
+	 * Returns the number of re-balancing operations, or 0 if no re-balancing operations were necessary.
+	 * 
+	 */
 	private int fixCase02(IAVLNode node) {
 		int total = 0;
 		IAVLNode left = node.getLeft();
@@ -315,6 +321,14 @@ public class AVLTree {
 		}
 		return total;
 	}
+	
+	/**
+	 * private int fixCase1(IAVLNode node)
+	 *
+	 * Re-balancing for case 1 (?)
+	 * Returns the number of re-balancing operations, or 0 if no re-balancing operations were necessary.
+	 * 
+	 */
 	private int fixCase1(IAVLNode node) {
 		int total = 0;
 		node = node.getParent();
@@ -328,6 +342,14 @@ public class AVLTree {
 		}
 		return total;
 	}
+	
+	/**
+	 * private int fixCase20(IAVLNode node)
+	 *
+	 * Re-balancing for case 20 after insertion - left edge is 2 and right edge is 0
+	 * Returns the number of re-balancing operations, or 0 if no re-balancing operations were necessary.
+	 * 
+	 */
 	private int fixCase20(IAVLNode node) {
 		int total = 0;
 		IAVLNode right = node.getRight();
@@ -431,6 +453,12 @@ public class AVLTree {
 		return total;
 	}
 
+	/**
+	 * private void deleteLeaf(IAVLNode node)
+	 *
+	 * Deletes the leaf 'node', without re-balancing operations
+	 * 
+	 */
 	private void deleteLeaf(IAVLNode node) {
 		IAVLNode parent = node.getParent();
 		if (node.isLeftChild()) {
@@ -443,6 +471,13 @@ public class AVLTree {
 			parent.downSize();
 		}
 	}
+	
+	/**
+	 * private void deleteUnary(IAVLNode node)
+	 *
+	 * Deletes an unary node, without re-balancing operations
+	 * 
+	 */
 	private void deleteUnary(IAVLNode node) {
 		if (node.getParent() == null) {
 			if (node.getLeft().isRealNode()) {
@@ -482,6 +517,13 @@ public class AVLTree {
 			node.getParent().downSize();
 		}
 	}
+	
+	/**
+	 * private void deleteBinary(IAVLNode node)
+	 *
+	 * Deletes a binary node, without re-balancing operations
+	 * 
+	 */
 	private void deleteBinary(IAVLNode node) {
 		IAVLNode successor = node.successor();
 		successor.setHeight(node.getHeight());
@@ -506,6 +548,13 @@ public class AVLTree {
 		}
 	}
 	
+	/**
+	 * private int case31(IAVLNode node)
+	 *
+	 * Re-balancing for case 31 after deletion - left edge is 3 and right edge is 1
+	 * Returns the number of re-balancing operations, or 0 if no re-balancing operations were necessary.
+	 * 
+	 */
 	private int case31(IAVLNode node) {
 		int total = 0;
 		int rightEdge = node.getHeight()-node.getRight().getHeight();
@@ -535,6 +584,13 @@ public class AVLTree {
 		return total;
 	}
 	
+	/**
+	 * private int case13(IAVLNode node)
+	 *
+	 * Re-balancing for case 13 after deletion - left edge is 1 and right edge is 3
+	 * Returns the number of re-balancing operations, or 0 if no re-balancing operations were necessary.
+	 * 
+	 */
 	private int case13(IAVLNode node) {
 		int total = 0;
 		int rightEdge = node.getHeight()-node.getRight().getHeight();
@@ -645,6 +701,7 @@ public class AVLTree {
 		}
 
 	}
+	
 	/**
 	 * public int[] keysToArray()
 	 *
@@ -913,6 +970,7 @@ public class AVLTree {
 		}
 
 	}
+	
 	/**
 	 * public interface IAVLNode
 	 * ! Do not delete or modify this - otherwise all tests will fail !
