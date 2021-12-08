@@ -882,6 +882,13 @@ public class AVLTree {
 		return Math.abs(thisRoot.getHeight()-otherRoot.getHeight()) + 1;
 	}
 
+	/**
+	 * private void joinDifferentSizes(IAVLNode x, AVLTree lower, AVLTree higher)
+	 *
+	 * joins two trees with different sizes with x - 'lower' tree has lower rank than 'higher' tree
+	 * Returns the complexity of the operation (|lower.rank - higher.rank| + 1).
+	 *
+	 */
 	private void joinDifferentSizes(IAVLNode x, AVLTree lower, AVLTree higher) {
 		IAVLNode lowerRoot = lower.getRoot();
 		IAVLNode higherRoot = higher.getRoot();
